@@ -5,4 +5,5 @@ public class LoginPage {
 	//method 2
 	//method 3
 	//New Comments
+	//Comments Latest
 }
