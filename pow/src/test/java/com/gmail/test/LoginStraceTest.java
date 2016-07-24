@@ -14,13 +14,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.gmail.pages.LoginPage;
+import com.gmail.utils.Capture;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
 
 
-public class LoginTest {
+public class LoginStraceTest {
 
 	ExtentReports report;
 	ExtentTest logger;
@@ -28,7 +29,7 @@ public class LoginTest {
 	WebDriver driver;
 	@BeforeClass
 	public void setup() {
-		String reportFile="./Reports/Current/results.html";
+		String reportFile="./Reports/Current/results_strace.html";
 		report=new ExtentReports(reportFile);
 		System.setProperty("webdriver.chrome.driver", "c:\\ChromeDriver\\chromedriver_win32\\chromedriver.exe");
 		driver=new ChromeDriver();
@@ -69,14 +70,23 @@ public class LoginTest {
 		String tName=result.getName();
 		//String tCaseId=result.toString();
 		if(result.getStatus() == ITestResult.FAILURE) {
+			Capture.screenShot(driver, tName);
 			String thwomsg=result.getThrowable().getMessage();
-		//	System.out.println("Test Case "+tName+" Failed !!");
-			logger.log(LogStatus.FAIL, tName+" Failed");
+		    StringWriter sw=new StringWriter();
+		    PrintWriter pw = new PrintWriter(sw, true);
+		    result.getThrowable().printStackTrace(pw);
+		    String strace=sw.toString();
+			System.out.println("Test Case "+tName+" Failed !!");
 			logger.log(LogStatus.FAIL, thwomsg);
+			// to be used in detailed logs
+			logger.log(LogStatus.FAIL, "Detailed logs:");
+		    logger.log(LogStatus.FAIL, strace);
+		    logger.addScreenCapture(Capture.screenShot(driver, tName));
+		    
 		
 		} else {
 			//System.out.println("Test Case "+tName+" Passed !!");
-			logger.log(LogStatus.PASS,tName+" Passed");
+			logger.log(LogStatus.PASS," Passed");
 			
 		}
 		
@@ -88,7 +98,7 @@ public class LoginTest {
 	
 	@AfterClass
 	public void tearDown() {
-		//driver.close();
+		driver.close();
 	}
 
 	
